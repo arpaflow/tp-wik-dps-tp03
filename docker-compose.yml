@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  typescript:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PING_LISTEN_PORT=8080
+    deploy:
+        mode: replicated
+        replicas: 4
+    restart: always
+    networks:
+      - front-network
+  proxy:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    depends_on: 
+      - typescript
+    networks:
+      - front-network
+networks:
+  front-network:
+    driver: bridge
